@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users, Copy, CheckCircle2, Gift, TrendingUp, UserPlus } from "lucide-react";
 
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState("");
   const referralCode = "KIRA-XXXXXX"; // TODO: generate from user ID
 
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/markets?ref=${referralCode}`);
+    navigator.clipboard.writeText(`${origin}/markets?ref=${referralCode}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -54,7 +59,7 @@ export default function ReferralsPage() {
             className="flex-1 px-2.5 py-2 rounded text-xs font-mono truncate"
             style={{ background: "var(--bg-surface)", color: "var(--fg)", border: "1px solid var(--border)" }}
           >
-            {window.location.origin}/markets?ref={referralCode}
+            {origin}/markets?ref={referralCode}
           </div>
           <button
             className="px-3 py-2 rounded text-xs font-semibold transition-colors"
