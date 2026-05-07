@@ -110,6 +110,7 @@ export async function syncMarketsFromPolymarket(
               yesShares: amm.yesShares,
               noShares: amm.noShares,
               liquidity: amm.liquidity,
+              volume: market.volume,
               // Don't update status if market has trades (preserve ACTIVE)
               ...(existing.status === "DRAFT" && { status: market.status }),
             },
@@ -135,6 +136,7 @@ export async function syncMarketsFromPolymarket(
               yesShares: amm.yesShares,
               noShares: amm.noShares,
               liquidity: amm.liquidity,
+              volume: market.volume,
             },
           });
           result.created++;
@@ -193,6 +195,7 @@ export async function syncSingleMarket(polymarketId: string): Promise<boolean> {
         yesShares: amm.yesShares,
         noShares: amm.noShares,
         liquidity: amm.liquidity,
+        volume: adapted.volume,
       },
       update: {
         title: adapted.title,
@@ -207,6 +210,7 @@ export async function syncSingleMarket(polymarketId: string): Promise<boolean> {
         yesShares: amm.yesShares,
         noShares: amm.noShares,
         liquidity: amm.liquidity,
+        volume: adapted.volume,
       },
     });
 
