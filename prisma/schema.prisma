@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum MarketStatus {
+  DRAFT        // Admin created, not yet live
+  ACTIVE       // Live, accepting trades
+  PAUSED       // Temporarily halted
+  RESOLVED     // Outcome determined, payouts distributed
+  CANCELLED    // Voided, all positions refunded
+}
+
+enum MarketCategory {
+  POLITICS
+  CRYPTO
+  SPORTS
+  ENTERTAINMENT
+  SCIENCE
+  TECHNOLOGY
+  ECONOMICS
+  WEATHER
+  OTHER
+}
+
+enum Side {
+  YES
+  NO
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  FILLED
+  PARTIALLY_FILLED
+  CANCELLED
+  EXPIRED
+}
+
+enum ResolutionOutcome {
+  YES
+  NO
+  INVALID  // Market cancelled, refund all
+}
+
+// ─── Models ───────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  supabaseId   String   @unique @map("supabase_id")
+  email        String   @unique
+  username     String?  @unique
+  displayName  String?  @map("display_name")
+  avatarUrl    String?  @map("avatar_url")
+  role         UserRole @default(USER)
+  balance      Decimal  @default(1000) @db.Decimal(12, 2)
+  totalPnl     Decimal  @default(0) @map("total_pnl") @db.Decimal(12, 2)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  positions      Position[]
+  trades         Trade[]
+  orders         Order[]
+  activities     Activity[]
+  createdMarkets Market[]     @relation("MarketCreator")
+
+  @@index([supabaseId])
+  @@map("users")
+}
+
+model Market {
+  id              String         @id @default(cuid())
+  polymarketId    String?        @unique @map("polymarket_id")
+  slug            String         @unique
+  title           String
+  description     String
+  imageUrl        String?        @map("image_url")
+  category        MarketCategory @default(OTHER)
+  status          MarketStatus   @default(DRAFT)
+  outcome         Boolean?       // null until resolved
+  resolution      ResolutionOutcome? @map("resolution_outcome")
+  resolvedAt      DateTime?      @map("resolved_at")
+  resolutionSource String?       @map("resolution_source")
+
+  // AMM State
+  liquidity       Decimal        @default(100) @db.Decimal(12, 2)
+  yesShares       Decimal        @default(50) @map("yes_shares") @db.Decimal(12, 4)
+  noShares        Decimal        @default(50) @map("no_shares") @db.Decimal(12, 4)
+  yesPrice        Decimal        @default(0.50) @map("yes_price") @db.Decimal(6, 4)
+  noPrice         Decimal        @default(0.50) @map("no_price") @db.Decimal(6, 4)
+  volume          Decimal        @default(0) @db.Decimal(14, 2)
+  totalTrades     Int            @default(0) @map("total_trades")
+
+  // Metadata
+  startsAt        DateTime?      @map("starts_at")
+  endsAt          DateTime?      @map("ends_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  createdById     String?        @map("created_by_id")
+
+  createdBy       User?          @relation("MarketCreator", fields: [createdById], references: [id])
+  positions       Position[]
+  trades          Trade[]
+  orders          Order[]
+  priceHistory    PriceHistory[]
+  activities      Activity[]
+
+  @@index([status])
+  @@index([category])
+  @@index([slug])
+  @@index([endsAt])
+  @@map("markets")
+}
+
+model Position {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  marketId    String   @map("market_id")
+  side        Side
+  shares      Decimal  @db.Decimal(12, 4)
+  avgPrice    Decimal  @map("avg_price") @db.Decimal(6, 4)
+  totalCost   Decimal  @map("total_cost") @db.Decimal(12, 2)
+  realizedPnl Decimal  @default(0) @map("realized_pnl") @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, marketId, side])
+  @@index([userId])
+  @@index([marketId])
+  @@map("positions")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String      @map("user_id")
+  marketId    String      @map("market_id")
+  side        Side
+  orderType   OrderType   @map("order_type")
+  status      OrderStatus @default(PENDING)
+  shares      Decimal     @db.Decimal(12, 4)
+  price       Decimal     @db.Decimal(6, 4)
+  filledShares Decimal    @default(0) @map("filled_shares") @db.Decimal(12, 4)
+  filledAt    DateTime?   @map("filled_at")
+  expiresAt   DateTime?   @map("expires_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([marketId, status])
+  @@map("orders")
+}
+
+model Trade {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  marketId    String   @map("market_id")
+  side        Side
+  shares      Decimal  @db.Decimal(12, 4)
+  price       Decimal  @db.Decimal(6, 4)
+  cost        Decimal  @db.Decimal(12, 2)
+  fee         Decimal  @default(0) @db.Decimal(8, 4)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([marketId])
+  @@index([createdAt])
+  @@map("trades")
+}
+
+model PriceHistory {
+  id        String   @id @default(cuid())
+  marketId  String   @map("market_id")
+  yesPrice  Decimal  @map("yes_price") @db.Decimal(6, 4)
+  noPrice   Decimal  @map("no_price") @db.Decimal(6, 4)
+  volume    Decimal  @default(0) @db.Decimal(12, 2)
+  timestamp DateTime @default(now())
+
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@index([marketId, timestamp])
+  @@map("price_history")
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  marketId  String?  @map("market_id")
+  type      String   // trade, resolution, deposit, withdrawal
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market Market? @relation(fields: [marketId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@map("activities")
+}
