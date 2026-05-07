@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     const where: Record<string, unknown> = {};
     if (status !== "ALL") where.status = status;
-    if (category) where.category = category;
+    if (category) where.category = category.toUpperCase();
     if (search) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
