@@ -1,95 +1,60 @@
 @import "tailwindcss";
 
-/* ─── Kira Markets — Premium Design System ────────────── */
+/* ─── Kira Markets — Institutional Design System ─────── */
+/* Dark-only. Financial. Dense. Philippine-first.         */
 
 :root {
-  /* Surface hierarchy — no pure white anywhere */
-  --bg: #F8FAFC;
-  --bg-raised: #FFFFFF;
-  --bg-surface: #F1F5F9;
-  --bg-hover: #E2E8F0;
-  --bg-overlay: rgba(15, 23, 42, 0.5);
-
-  /* Text — refined slate scale */
-  --fg: #0F172A;
-  --fg-secondary: #334155;
-  --fg-muted: #64748B;
-  --fg-dim: #94A3B8;
-  --fg-inverse: #FFFFFF;
-
-  /* Brand — warm amber, not harsh yellow */
-  --yellow: #FBBF24;
-  --yellow-hover: #F59E0B;
-  --yellow-dim: #FEF3C7;
-  --yellow-subtle: #FFFBEB;
-
-  /* Trading — emerald/rose, refined */
-  --green: #10B981;
-  --green-hover: #059669;
-  --green-dim: rgba(16, 185, 129, 0.1);
-  --green-bg: #ECFDF5;
-  --red: #F43F5E;
-  --red-hover: #E11D48;
-  --red-dim: rgba(244, 63, 94, 0.1);
-  --red-bg: #FFF1F2;
-
-  /* Borders — very subtle */
-  --border: #E2E8F0;
-  --border-light: #F1F5F9;
-  --border-focus: #94A3B8;
-
-  /* Shadows — layered depth */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
-
-  /* Radius */
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
-
-  /* Chart colors */
-  --chart-green: #10B981;
-  --chart-red: #F43F5E;
-  --chart-grid: #F1F5F9;
-}
-
-/* ─── Dark Mode ─────────────────────────────────────── */
-[data-theme="dark"] {
+  /* Surface hierarchy — institutional dark */
   --bg: #020617;
   --bg-raised: #0F172A;
   --bg-surface: #1E293B;
   --bg-hover: #334155;
   --bg-overlay: rgba(0, 0, 0, 0.7);
 
+  /* Text — slate scale */
   --fg: #F1F5F9;
   --fg-secondary: #CBD5E1;
   --fg-muted: #94A3B8;
   --fg-dim: #64748B;
-  --fg-inverse: #0F172A;
 
-  --yellow-dim: rgba(251, 191, 36, 0.15);
-  --yellow-subtle: rgba(251, 191, 36, 0.08);
+  /* Brand — amber-400 */
+  --yellow: #FBBF24;
+  --yellow-hover: #F59E0B;
+  --yellow-dim: rgba(251, 191, 36, 0.12);
+  --yellow-subtle: rgba(251, 191, 36, 0.06);
 
-  --green-dim: rgba(16, 185, 129, 0.15);
-  --green-bg: rgba(16, 185, 129, 0.08);
-  --red-dim: rgba(244, 63, 94, 0.15);
-  --red-bg: rgba(244, 63, 94, 0.08);
+  /* Trading */
+  --green: #34D399;
+  --green-hover: #10B981;
+  --green-dim: rgba(52, 211, 153, 0.12);
+  --green-bg: rgba(52, 211, 153, 0.06);
+  --red: #FB7185;
+  --red-hover: #F43F5E;
+  --red-dim: rgba(251, 113, 133, 0.12);
+  --red-bg: rgba(251, 113, 133, 0.06);
 
+  /* Borders */
   --border: #1E293B;
   --border-light: #334155;
   --border-focus: #475569;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  /* Shadows — institutional depth */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
 
+  /* Radius — sharp, institutional */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Chart */
+  --chart-green: #34D399;
+  --chart-red: #FB7185;
   --chart-grid: #1E293B;
 }
 
@@ -97,6 +62,10 @@
 * {
   box-sizing: border-box;
   border-color: var(--border);
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
@@ -107,6 +76,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .tabular-nums {
@@ -131,7 +102,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--border-light);
   border-radius: var(--radius-full);
 }
 
@@ -147,7 +118,7 @@ body {
   scrollbar-width: none;
 }
 
-/* ─── Input Reset ───────────────────────────────────── */
+/* ─── Input ─────────────────────────────────────────── */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -162,7 +133,6 @@ input::placeholder {
   color: var(--fg-dim);
 }
 
-/* ─── Focus Ring ────────────────────────────────────── */
 input:focus, select:focus, button:focus-visible {
   outline: 2px solid var(--yellow);
   outline-offset: 1px;
@@ -192,16 +162,16 @@ input:focus, select:focus, button:focus-visible {
   to { transform: translateX(100%); opacity: 0; }
 }
 
-.toast-enter { animation: slideInRight 0.25s ease-out; }
-.toast-exit { animation: slideOutRight 0.25s ease-in; }
+.toast-enter { animation: slideInRight 0.2s ease-out; }
+.toast-exit { animation: slideOutRight 0.2s ease-in; }
 
-/* ─── Slide Panel ───────────────────────────────────── */
+/* ─── Panel ─────────────────────────────────────────── */
 @keyframes slidePanelIn {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
 }
 
-.panel-enter { animation: slidePanelIn 0.2s ease-out; }
+.panel-enter { animation: slidePanelIn 0.15s ease-out; }
 
 /* ─── Bottom Sheet ──────────────────────────────────── */
 @keyframes slideUp {
@@ -209,7 +179,23 @@ input:focus, select:focus, button:focus-visible {
   to { transform: translateY(0); }
 }
 
-.bottom-sheet-enter { animation: slideUp 0.25s ease-out; }
+.bottom-sheet-enter { animation: slideUp 0.2s ease-out; }
+
+/* ─── Modal ─────────────────────────────────────────── */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.97) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ─── Live Pulse ────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-pulse {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
 
 /* ─── Responsive ────────────────────────────────────── */
 @media (max-width: 768px) {
