@@ -2,6 +2,18 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import {
+  Landmark,
+  Trophy,
+  Bitcoin,
+  Film,
+  TrendingUp,
+  FlaskConical,
+  Cpu,
+  CloudSun,
+  BarChart3,
+  Clock,
+} from "lucide-react";
 import type { MarketListItem } from "@/types";
 
 interface MarketCardProps {
@@ -9,126 +21,150 @@ interface MarketCardProps {
   onTrade?: (marketId: string, side: "YES" | "NO") => void;
 }
 
-export function MarketCard({ market, onTrade }: MarketCardProps) {
-  const yesPrice = market.yesPrice;
-  const noPrice = market.noPrice;
-  const yesPercent = Math.round(yesPrice * 100);
-  const noPercent = Math.round(noPrice * 100);
-  const isResolved = market.status === "RESOLVED";
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  POLITICS: Landmark,
+  SPORTS: Trophy,
+  CRYPTO: Bitcoin,
+  ENTERTAINMENT: Film,
+  ECONOMICS: TrendingUp,
+  SCIENCE: FlaskConical,
+  TECHNOLOGY: Cpu,
+  WEATHER: CloudSun,
+  OTHER: BarChart3,
+};
 
-  // Calculate time remaining
+export function MarketCard({ market, onTrade }: MarketCardProps) {
+  const yesPercent = Math.round(market.yesPrice * 100);
+  const noPercent = 100 - yesPercent;
+  const isResolved = market.status === "RESOLVED";
   const endsIn = market.endsAt ? getTimeRemaining(market.endsAt) : null;
+  const [imgError, setImgError] = useState(false);
+
+  const CatIcon = CATEGORY_ICONS[market.category] ?? BarChart3;
 
   return (
     <div
-      className="p-4 border-b transition-colors hover:bg-[var(--bg-hover)]"
+      className="group border-b transition-colors"
       style={{ borderColor: "var(--border-light)" }}
     >
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        {/* Market Info */}
-        <div className="flex-1 min-w-0">
-          <Link href={`/markets/${market.id}`} className="block">
-            <h3 className="text-base font-semibold leading-tight mb-2" style={{ color: "var(--fg)" }}>
+      <Link href={`/markets/${market.id}`} className="block">
+        <div className="flex items-center gap-3 px-3 py-3 md:px-4">
+          {/* Market Image / Category Icon */}
+          {market.imageUrl && !imgError ? (
+            <img
+              src={market.imageUrl}
+              alt=""
+              className="w-9 h-9 rounded-lg object-cover shrink-0"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div
+              className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center"
+              style={{ background: "var(--bg-surface)" }}
+            >
+              <CatIcon size={16} />
+            </div>
+          )}
+
+          {/* Title + Meta Row */}
+          <div className="flex-1 min-w-0">
+            <h3
+              className="text-[13px] font-medium leading-snug line-clamp-2 group-hover:underline decoration-1 underline-offset-2"
+              style={{ color: "var(--fg)" }}
+            >
               {market.title}
             </h3>
-          </Link>
-
-          {/* Probability Bar */}
-          <div className="mb-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium" style={{ color: "var(--green)" }}>
-                Yes {yesPercent}%
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--fg-dim)" }}>
+                {market.category.toLowerCase()}
               </span>
-              <span className="text-xs font-medium" style={{ color: "var(--red)" }}>
-                No {noPercent}%
+              {endsIn && !isResolved && (
+                <>
+                  <span className="text-[10px]" style={{ color: "var(--border)" }}>·</span>
+                  <span className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: endsIn.urgent ? "var(--red)" : "var(--fg-dim)" }}>
+                    <Clock size={10} />
+                    {endsIn.label}
+                  </span>
+                </>
+              )}
+              <span className="text-[10px]" style={{ color: "var(--border)" }}>·</span>
+              <span className="text-[10px] tabular-nums" style={{ color: "var(--fg-dim)" }}>
+                ₱{formatVolume(market.volume)} vol
               </span>
-            </div>
-            <div
-              className="h-1.5 rounded-full overflow-hidden"
-              style={{ background: "var(--red-dim)" }}
-            >
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${yesPercent}%`,
-                  background: "var(--green)",
-                }}
-              />
             </div>
           </div>
 
-          {/* Meta info */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <span
-              className="px-2 py-0.5 text-[10px] font-semibold rounded-full"
-              style={{ background: "var(--bg-surface)", color: "var(--fg-muted)" }}
-            >
-              {market.category}
-            </span>
-
-            {endsIn && !isResolved && (
-              <span
-                className="px-2 py-0.5 text-[10px] font-semibold rounded-full"
-                style={{
-                  background: endsIn.urgent ? "var(--red-dim)" : "var(--yellow-dim)",
-                  color: endsIn.urgent ? "var(--red)" : "#92400E",
-                }}
+          {/* Probability Bar + Buttons — compact */}
+          <div className="flex items-center shrink-0 ml-2">
+            {/* Thin probability bar (desktop only) */}
+            <div className="hidden lg:flex flex-col items-end mr-3 min-w-[60px]">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[10px] font-semibold tabular-nums" style={{ color: "var(--green)" }}>
+                  {yesPercent}%
+                </span>
+                <span className="text-[10px]" style={{ color: "var(--fg-dim)" }}>·</span>
+                <span className="text-[10px] font-semibold tabular-nums" style={{ color: "var(--red)" }}>
+                  {noPercent}%
+                </span>
+              </div>
+              <div
+                className="w-full h-[3px] rounded-full overflow-hidden"
+                style={{ background: "var(--red-dim)" }}
               >
-                {endsIn.label}
-              </span>
-            )}
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${yesPercent}%`, background: "var(--green)" }}
+                />
+              </div>
+            </div>
 
-            <span className="text-xs tabular-nums" style={{ color: "var(--fg-dim)" }}>
-              Vol: ₱{formatVolume(market.volume)}
-            </span>
-
-            {/* Share button */}
+            {/* YES Button */}
             <button
-              className="ml-auto p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-surface)]"
+              className="flex flex-col items-center px-2.5 py-1.5 md:px-3 md:py-2 rounded-l-lg border-r transition-all"
+              style={{
+                background: "var(--green-bg)",
+                borderColor: "var(--border-light)",
+              }}
               onClick={(e) => {
                 e.preventDefault();
-                navigator.clipboard.writeText(`${window.location.origin}/markets/${market.id}`);
+                e.stopPropagation();
+                onTrade?.(market.id, "YES");
               }}
-              title="Share market"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                <polyline points="16 6 12 2 8 6" />
-                <line x1="12" y1="2" x2="12" y2="15" />
-              </svg>
+              <span
+                className="text-[15px] md:text-base font-bold tabular-nums leading-none"
+                style={{ color: "var(--green)" }}
+              >
+                {yesPercent}¢
+              </span>
+              <span className="text-[9px] font-bold uppercase tracking-wide mt-0.5" style={{ color: "var(--green)" }}>
+                Yes
+              </span>
+            </button>
+
+            {/* NO Button */}
+            <button
+              className="flex flex-col items-center px-2.5 py-1.5 md:px-3 md:py-2 rounded-r-lg transition-all"
+              style={{ background: "var(--red-bg)" }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onTrade?.(market.id, "NO");
+              }}
+            >
+              <span
+                className="text-[15px] md:text-base font-bold tabular-nums leading-none"
+                style={{ color: "var(--red)" }}
+              >
+                {noPercent}¢
+              </span>
+              <span className="text-[9px] font-bold uppercase tracking-wide mt-0.5" style={{ color: "var(--red)" }}>
+                No
+              </span>
             </button>
           </div>
         </div>
-
-        {/* Trade Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
-            style={{
-              background: "var(--green)",
-              color: "white",
-              boxShadow: "0 2px 4px rgba(16, 185, 129, 0.3)",
-            }}
-            onClick={() => onTrade?.(market.id, "YES")}
-          >
-            <span>Yes</span>
-            <span className="tabular-nums">₱{yesPrice.toFixed(2)}</span>
-          </button>
-
-          <button
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
-            style={{
-              background: "var(--red)",
-              color: "white",
-              boxShadow: "0 2px 4px rgba(239, 68, 68, 0.3)",
-            }}
-            onClick={() => onTrade?.(market.id, "NO")}
-          >
-            <span>No</span>
-            <span className="tabular-nums">₱{noPrice.toFixed(2)}</span>
-          </button>
-        </div>
-      </div>
+      </Link>
     </div>
   );
 }

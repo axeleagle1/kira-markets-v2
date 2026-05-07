@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthModal } from "@/contexts/auth-modal-context";
 import { useQueryClient } from "@tanstack/react-query";
+import { X, CheckCircle2, Loader2 } from "lucide-react";
 
 export function AuthModal() {
   const { isOpen, mode, close, openSignIn, openSignUp } = useAuthModal();
@@ -74,46 +75,45 @@ export function AuthModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 transition-opacity"
-        style={{ background: "rgba(0, 0, 0, 0.5)" }}
+        style={{ background: "var(--bg-overlay)" }}
         onClick={handleClose}
       />
 
-      {/* Modal */}
       <div
-        className="relative w-full max-w-sm mx-4 rounded-2xl overflow-hidden"
+        className="relative w-full max-w-sm mx-4 rounded-xl overflow-hidden"
         style={{
-          background: "var(--bg)",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          background: "var(--bg-raised)",
+          boxShadow: "var(--shadow-lg)",
           animation: "modalIn 0.2s ease-out",
         }}
       >
-        {/* Close button */}
         <button
-          className="absolute top-3 right-3 p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-surface)]"
-          onClick={handleClose}
+          className="absolute top-3 right-3 p-1.5 rounded-md transition-colors"
           style={{ color: "var(--fg-dim)" }}
+          onClick={handleClose}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
+          <X size={16} />
         </button>
 
         <div className="p-6">
           {/* Header */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-5">
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
+              className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3"
               style={{ background: "var(--yellow)" }}
             >
-              <span className="text-xl font-bold" style={{ color: "var(--fg)" }}>
+              <span className="text-lg font-black" style={{ color: "var(--fg)" }}>
                 K
               </span>
             </div>
-            <h2 className="text-lg font-bold" style={{ color: "var(--fg)" }}>
-              {sent ? "Check your email" : mode === "signin" ? "Welcome back" : "Create account"}
+            <h2 className="text-base font-bold" style={{ color: "var(--fg)" }}>
+              {sent
+                ? "Check your email"
+                : mode === "signin"
+                  ? "Welcome back"
+                  : "Create account"}
             </h2>
             <p className="text-xs mt-1" style={{ color: "var(--fg-dim)" }}>
               {sent
@@ -124,23 +124,20 @@ export function AuthModal() {
             </p>
           </div>
 
-          {/* Sent confirmation */}
           {sent ? (
             <div className="text-center">
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ background: "var(--green-dim)" }}
               >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
+                <CheckCircle2 size={24} style={{ color: "var(--green)" }} />
               </div>
-              <p className="text-sm mb-4" style={{ color: "var(--fg-muted)" }}>
-                Click the link in your email to verify your account, then come back to sign in.
+              <p className="text-[13px] mb-4" style={{ color: "var(--fg-muted)" }}>
+                Click the link in your email to verify your account, then come
+                back to sign in.
               </p>
               <button
-                className="text-sm font-medium"
+                className="text-[13px] font-medium"
                 style={{ color: "var(--green)" }}
                 onClick={() => {
                   setSent(false);
@@ -154,17 +151,19 @@ export function AuthModal() {
             <>
               {/* Mode tabs */}
               <div
-                className="flex rounded-xl p-1 mb-5"
+                className="flex rounded-lg p-0.5 mb-4"
                 style={{ background: "var(--bg-surface)" }}
               >
                 {(["signin", "signup"] as const).map((m) => (
                   <button
                     key={m}
-                    className="flex-1 py-2 text-sm font-semibold rounded-lg transition-all"
+                    className="flex-1 py-2 text-[13px] font-semibold rounded-md transition-all"
                     style={{
-                      background: mode === m ? "var(--bg)" : "transparent",
+                      background:
+                        mode === m ? "var(--bg-raised)" : "transparent",
                       color: mode === m ? "var(--fg)" : "var(--fg-dim)",
-                      boxShadow: mode === m ? "var(--shadow-sm)" : "none",
+                      boxShadow:
+                        mode === m ? "var(--shadow-xs)" : "none",
                     }}
                     onClick={() => {
                       setError(null);
@@ -177,11 +176,10 @@ export function AuthModal() {
                 ))}
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <div>
                   <label
-                    className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5"
+                    className="block text-[11px] font-semibold uppercase tracking-wider mb-1"
                     style={{ color: "var(--fg-dim)" }}
                   >
                     Email
@@ -191,7 +189,7 @@ export function AuthModal() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 text-sm rounded-xl outline-none transition-colors"
+                    className="w-full px-3 py-2.5 text-[13px] rounded-lg outline-none transition-colors"
                     style={{
                       background: "var(--bg-surface)",
                       color: "var(--fg)",
@@ -203,7 +201,7 @@ export function AuthModal() {
 
                 <div>
                   <label
-                    className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5"
+                    className="block text-[11px] font-semibold uppercase tracking-wider mb-1"
                     style={{ color: "var(--fg-dim)" }}
                   >
                     Password
@@ -214,7 +212,7 @@ export function AuthModal() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl outline-none transition-colors"
+                    className="w-full px-3 py-2.5 text-[13px] rounded-lg outline-none transition-colors"
                     style={{
                       background: "var(--bg-surface)",
                       color: "var(--fg)",
@@ -226,8 +224,11 @@ export function AuthModal() {
 
                 {error && (
                   <div
-                    className="p-3 rounded-xl text-xs font-medium"
-                    style={{ background: "var(--red-dim)", color: "var(--red)" }}
+                    className="p-2.5 rounded-lg text-xs font-medium"
+                    style={{
+                      background: "var(--red-bg)",
+                      color: "var(--red)",
+                    }}
                   >
                     {error}
                   </div>
@@ -236,13 +237,18 @@ export function AuthModal() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 text-sm font-bold rounded-xl transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
-                  style={{ background: "var(--yellow)", color: "var(--fg)" }}
+                  className="w-full py-2.5 text-[13px] font-bold rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed mt-1"
+                  style={{
+                    background: "var(--yellow)",
+                    color: "var(--fg)",
+                  }}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-[var(--fg)] border-t-transparent rounded-full animate-spin" />
-                      {mode === "signin" ? "Signing in..." : "Creating account..."}
+                      <Loader2 size={16} className="animate-spin" />
+                      {mode === "signin"
+                        ? "Signing in..."
+                        : "Creating account..."}
                     </span>
                   ) : mode === "signin" ? (
                     "Sign In"
@@ -252,8 +258,10 @@ export function AuthModal() {
                 </button>
               </form>
 
-              {/* Footer */}
-              <p className="text-center text-xs mt-4" style={{ color: "var(--fg-dim)" }}>
+              <p
+                className="text-center text-xs mt-4"
+                style={{ color: "var(--fg-dim)" }}
+              >
                 {mode === "signin" ? (
                   <>
                     Don&apos;t have an account?{" "}
@@ -287,7 +295,7 @@ export function AuthModal() {
         @keyframes modalIn {
           from {
             opacity: 0;
-            transform: scale(0.95) translateY(10px);
+            transform: scale(0.96) translateY(8px);
           }
           to {
             opacity: 1;

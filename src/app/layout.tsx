@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Kira Markets",
-  description: "Prediction market trading terminal",
+  title: "Kira Markets — Prediction Markets",
+  description: "Trade on real-world events with mock credits. Built for the Philippines.",
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
           <div className="flex flex-col min-h-screen">

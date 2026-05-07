@@ -2,31 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { TrendingUp, User } from "lucide-react";
 
 const NAV_ITEMS = [
-  {
-    href: "/markets",
-    label: "Markets",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M3 3v18h18" />
-        <path d="M18 17V9" />
-        <path d="M13 17V5" />
-        <path d="M8 17v-3" />
-      </svg>
-    ),
-  },
-  {
-    href: "/portfolio",
-    label: "Portfolio",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-        <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
-      </svg>
-    ),
-  },
+  { href: "/markets", label: "Markets", icon: TrendingUp },
+  { href: "/portfolio", label: "Portfolio", icon: User },
 ];
 
 export function MobileNav() {
@@ -36,14 +16,19 @@ export function MobileNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       style={{
-        background: "var(--bg)",
+        background: "color-mix(in srgb, var(--bg) 85%, transparent)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
         borderTop: "1px solid var(--border)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
       <div className="flex items-center justify-around h-14">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const Icon = item.icon;
+          const isActive =
+            pathname === item.href ||
+            pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
@@ -53,7 +38,11 @@ export function MobileNav() {
                 color: isActive ? "var(--fg)" : "var(--fg-dim)",
               }}
             >
-              <span className={isActive ? "text-[var(--yellow)]" : ""}>{item.icon}</span>
+              <Icon
+                size={20}
+                strokeWidth={isActive ? 2.5 : 1.8}
+                style={isActive ? { color: "var(--yellow)" } : undefined}
+              />
               <span className="text-[10px] font-semibold">{item.label}</span>
             </Link>
           );

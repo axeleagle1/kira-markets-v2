@@ -58,6 +58,8 @@ export interface SyncedMarket {
   endsAt: Date | null;
   yesPrice: number;
   noPrice: number;
+  volume: number;
+  liquidity: number;
 }
 
 // ─── Category Mapping ──────────────────────────────────
@@ -125,6 +127,8 @@ export function adaptMarketForSync(pm: PolymarketMarket): SyncedMarket {
     endsAt: pm.endDate ? new Date(pm.endDate) : null,
     yesPrice,
     noPrice,
+    volume: pm.volumeNum || 0,
+    liquidity: pm.liquidityNum || 0,
   };
 }
 

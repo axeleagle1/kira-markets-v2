@@ -6,6 +6,7 @@ import { AuthModalProvider } from "@/contexts/auth-modal-context";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { ToastProvider } from "@/contexts/toast-context";
 import { ToastContainer } from "@/components/ui/toast-container";
+import { ThemeProvider } from "@/contexts/theme-context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -23,13 +24,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthModalProvider>
-        <ToastProvider>
-          {children}
-          <AuthModal />
-          <ToastContainer />
-        </ToastProvider>
-      </AuthModalProvider>
+      <ThemeProvider>
+        <AuthModalProvider>
+          <ToastProvider>
+            {children}
+            <AuthModal />
+            <ToastContainer />
+          </ToastProvider>
+        </AuthModalProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
