@@ -12,10 +12,10 @@ const UpdateMarketSchema = z.object({
       "POLITICS",
       "CRYPTO",
       "SPORTS",
-      "TECH",
+      "TECHNOLOGY",
       "ENTERTAINMENT",
       "SCIENCE",
-      "BUSINESS",
+      "ECONOMICS",
       "WEATHER",
       "OTHER",
     ])
@@ -42,7 +42,7 @@ export async function PATCH(
     const parsed = UpdateMarketSchema.safeParse(body);
 
     if (!parsed.success) {
-      return apiError(parsed.error.errors[0].message, 400);
+      return apiError(parsed.error.issues[0].message, 400);
     }
 
     const market = await db.market.findUnique({ where: { id } });

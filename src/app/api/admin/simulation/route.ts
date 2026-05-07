@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     await requireAdmin();
 
     const body = await parseBody(request);
-    const action = body.action;
+    const action = (body as Record<string, unknown>).action;
 
     if (action === "start") {
       const parsed = StartSchema.safeParse(body);

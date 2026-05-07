@@ -18,14 +18,14 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin();
+    const admin = await requireAdmin();
     const { id } = await params;
 
     const body = await parseBody(request);
     const parsed = ResolveSchema.safeParse(body);
 
     if (!parsed.success) {
-      return apiError(parsed.error.errors[0].message, 400);
+      return apiError(parsed.error.issues[0].message, 400);
     }
 
     const market = await db.market.findUnique({
@@ -54,7 +54,7 @@ export async function POST(
         where: { id },
         data: {
           status: "RESOLVED",
-          outcome,
+          outcome: outcome === "YES",
           resolvedAt: new Date(),
         },
       });
@@ -91,6 +91,8 @@ export async function POST(
           type: "MARKET_RESOLVED",
           message: `Market resolved as ${outcome}: ${market.title}`,
           metadata: { marketId: id, outcome },
+          user: { connect: { id: admin.id } },
+          market: { connect: { id } },
         },
       });
     });

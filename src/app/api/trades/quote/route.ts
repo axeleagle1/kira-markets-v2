@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!parsed.success) {
-      return apiError(parsed.error.errors[0].message, 400);
+      return apiError(parsed.error.issues[0].message, 400);
     }
 
     const { marketId, side, shares, action } = parsed.data;
